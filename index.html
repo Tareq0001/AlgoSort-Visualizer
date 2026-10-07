@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlgoSort Visualizer | محاكي خوارزميات الترتيب</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">📊</div>
+        <div class="logo-text">
+          <h1 data-i18n="appTitle">AlgoSort Visualizer</h1>
+          <p class="subtitle" data-i18n="appSubtitle">محاكي بصري تفاعلي لخوارزميات الترتيب والتعقيد الحسابي</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="soundToggleBtn" class="action-btn" title="تبديل المؤثرات الصوتية">
+          <span id="soundIcon">🔊</span>
+          <span data-i18n="soundLabel">الصوت</span>
+        </button>
+        <button id="langToggleBtn" class="action-btn">
+          <span class="flag-icon">🌐</span>
+          <span id="langText">English</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Control Toolbar -->
+    <section class="toolbar-card">
+      <div class="toolbar-row algorithms-row">
+        <div class="algo-tabs" id="algoTabs">
+          <button class="algo-tab active" data-algo="bubble">
+            <span class="algo-name" data-i18n="algoBubble">ترتيب الفقاعة (Bubble)</span>
+            <span class="complexity-badge">O(n²)</span>
+          </button>
+          <button class="algo-tab" data-algo="selection">
+            <span class="algo-name" data-i18n="algoSelection">ترتيب الاختيار (Selection)</span>
+            <span class="complexity-badge">O(n²)</span>
+          </button>
+          <button class="algo-tab" data-algo="insertion">
+            <span class="algo-name" data-i18n="algoInsertion">ترتيب الإدراج (Insertion)</span>
+            <span class="complexity-badge">O(n²)</span>
+          </button>
+          <button class="algo-tab" data-algo="quick">
+            <span class="algo-name" data-i18n="algoQuick">الترتيب السريع (Quick)</span>
+            <span class="complexity-badge">O(n log n)</span>
+          </button>
+          <button class="algo-tab" data-algo="merge">
+            <span class="algo-name" data-i18n="algoMerge">ترتيب الدمج (Merge)</span>
+            <span class="complexity-badge">O(n log n)</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="toolbar-row controls-row">
+        <!-- Play / Pause / Reset -->
+        <div class="playback-controls">
+          <button id="playBtn" class="btn btn-primary">
+            <span id="playIcon">▶</span>
+            <span id="playLabel" data-i18n="btnStart">بدء الترتيب</span>
+          </button>
+          <button id="pauseBtn" class="btn btn-secondary" disabled>
+            <span>⏸</span>
+            <span data-i18n="btnPause">إيقاف مؤقت</span>
+          </button>
+          <button id="stepBtn" class="btn btn-secondary">
+            <span>⏭</span>
+            <span data-i18n="btnStep">خطوة</span>
+          </button>
+          <button id="resetBtn" class="btn btn-danger">
+            <span>🔄</span>
+            <span data-i18n="btnReset">إعادة تعيين</span>
+          </button>
+        </div>
+
+        <!-- Sliders & Selectors -->
+        <div class="sliders-group">
+          <div class="control-field">
+            <label for="arraySize">
+              <span data-i18n="lblSize">حجم المصفوفة:</span>
+              <strong id="sizeValue">35</strong>
+            </label>
+            <input type="range" id="arraySize" min="10" max="75" value="35">
+          </div>
+
+          <div class="control-field">
+            <label for="speedRange">
+              <span data-i18n="lblSpeed">السرعة:</span>
+              <strong id="speedValue">50 ms</strong>
+            </label>
+            <input type="range" id="speedRange" min="5" max="300" value="50" step="5">
+          </div>
+
+          <div class="control-field select-field">
+            <label for="patternSelect" data-i18n="lblPattern">النمط الابتدائي:</label>
+            <select id="patternSelect">
+              <option value="random" data-i18n="patternRandom">عشوائي تماماً</option>
+              <option value="nearlySorted" data-i18n="patternNearly">شبه مرتب</option>
+              <option value="reversed" data-i18n="patternReversed">معكوس تنازلياً</option>
+              <option value="fewUnique" data-i18n="patternFewUnique">قيم مكررة قليلة</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Visual Stage -->
+    <main class="visualizer-stage">
+      <div class="metrics-bar">
+        <div class="metric-card">
+          <span class="metric-title" data-i18n="metricComparisons">المقارنات</span>
+          <span class="metric-value" id="comparisonsCounter">0</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-title" data-i18n="metricSwaps">التبديلات / الإزاحة</span>
+          <span class="metric-value" id="swapsCounter">0</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-title" data-i18n="metricTime">الوقت المستغرق</span>
+          <span class="metric-value" id="timerDisplay">0.00s</span>
+        </div>
+        <div class="metric-card status-card">
+          <span class="metric-title" data-i18n="metricStatus">الحالة</span>
+          <span class="metric-value status-indicator" id="statusIndicator" data-i18n="statusReady">جاهز للبدء</span>
+        </div>
+      </div>
+
+      <!-- Bars Canvas Container -->
+      <div class="bars-container" id="barsContainer">
+        <!-- Bars injected dynamically -->
+      </div>
+
+      <!-- Color Legend -->
+      <div class="legend-bar">
+        <div class="legend-item"><span class="legend-dot default-dot"></span><span data-i18n="legDefault">عنصر عادي</span></div>
+        <div class="legend-item"><span class="legend-dot compare-dot"></span><span data-i18n="legCompare">مقارنة فاحصة</span></div>
+        <div class="legend-item"><span class="legend-dot swap-dot"></span><span data-i18n="legSwap">تبديل / كتابة</span></div>
+        <div class="legend-item"><span class="legend-dot sorted-dot"></span><span data-i18n="legSorted">مكتمل ومستقر</span></div>
+      </div>
+    </main>
+
+    <!-- Algorithm Information Card -->
+    <section class="info-card" id="algoInfoCard">
+      <h3 id="infoTitle">خوارزمية الترتيب</h3>
+      <p id="infoDesc">شرح طريقة عمل الخوارزمية وتفاصيلها الحسابية.</p>
+      <div class="info-specs">
+        <div class="spec-pill"><span>أفضل حالة (Best):</span> <strong id="specBest">O(n)</strong></div>
+        <div class="spec-pill"><span>الحالة المتوسطة (Average):</span> <strong id="specAvg">O(n²)</strong></div>
+        <div class="spec-pill"><span>أسوأ حالة (Worst):</span> <strong id="specWorst">O(n²)</strong></div>
+        <div class="spec-pill"><span>المساحة (Space):</span> <strong id="specSpace">O(1)</strong></div>
+        <div class="spec-pill"><span>الاستقرار (Stable):</span> <strong id="specStable">نعم</strong></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>
+        <span>AlgoSort Visualizer &copy; 2026 | تطوير:</span>
+        <a href="https://github.com/Tareq0001" target="_blank" rel="noopener">أ. طارق ابوعشي (Tareq Aboushi)</a>
+      </p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
